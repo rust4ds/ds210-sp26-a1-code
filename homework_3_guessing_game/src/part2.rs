@@ -17,6 +17,6 @@ impl Strategy for Part2 {
                 min = guess + 1;
             }
         }
-    0 
+    return 0; 
     }
 }
