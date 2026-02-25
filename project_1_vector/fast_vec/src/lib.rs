@@ -61,7 +61,15 @@ impl<T> FastVec<T> {
     // Student 1 and Student 2 should implement this together
     // Use the project handout as a guide for this part!
     pub fn get(&self, i: usize) -> &T {
-        todo!("implement get!");
+        if i >= self.len {
+        panic!("FastVec: get out of bounds");
+    }
+        else {
+            unsafe {
+                let ptr_i: *mut T = self.ptr_to_data.add(i);
+                return &*ptr_i;
+            }
+        }
     }
 
     // Student 2 should implement this.
@@ -75,7 +83,14 @@ impl<T> FastVec<T> {
 
     // Student 1 should implement this.
     pub fn remove(&mut self, i: usize) {
-        todo!("implement remove");
+        if i >= self.len {
+            panic!("FastVec: remove out of bounds");
+        }
+        else {
+            unsafe {
+                
+            }
+        }
     }
 
     // This appears correct but with further testing, you will notice it has a bug!
