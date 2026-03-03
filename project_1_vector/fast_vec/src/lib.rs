@@ -112,17 +112,15 @@ impl<T> FastVec<T> {
             unsafe {
                 let ptr_to_target: *mut T = self.ptr_to_data.add(i);
                 let val : T = ptr_to_target.read();
-                for index in 0..self.len{
-                    if index > i{
-                        let ptr_to_index: *mut T = self.ptr_to_data.add(index);
-                        let val2 : T = ptr_to_index.read();
-                        let ptr_to_previous_index : *mut T = self.ptr_to_data.add(index-1);
-                        ptr_to_previous_index.write(val2);
+                for index in i+1..self.len{
+                    let ptr_to_index: *mut T = self.ptr_to_data.add(index);
+                    let val2 : T = ptr_to_index.read();
+                    let ptr_to_previous_index : *mut T = self.ptr_to_data.add(index-1);
+                    ptr_to_previous_index.write(val2);
                     }
                 }
             }
-        }
-        self.len = self.len -1;
+        self.len = self.len - 1
     }
 
     // This appears correct but with further testing, you will notice it has a bug!
