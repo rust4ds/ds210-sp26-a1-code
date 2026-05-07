@@ -4,7 +4,7 @@ use std::time::Duration;
 
 fn function1() {
     println!("In function 1");
-    for i in 0..100 {
+    for i in 0..10000 {
         println!("ping");
     }
     println!("function 1 done");
@@ -12,7 +12,7 @@ fn function1() {
 
 fn function2() {
     println!("In function 2");
-    for i in 0..100 {
+    for i in 0..10000 {
         println!("pong");
     }
     println!("function 2 done");

@@ -1,31 +1,68 @@
+use std::ops::DerefMut;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-fn main() {
+fn no_synchronization() {
     // Shared counter between all threads
-    let mut counter: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
+    let mut counter = 0;
+    let address_of_counter = &mut counter as *mut i32 as usize;
 
     // Spawn 5 threads to count
-    let mut tasks = Vec::with_capacity(5);
+    let mut threads = Vec::with_capacity(5);
     for i in 0..5 {
-        let clone = counter.clone();
-        let task = thread::spawn(move || {
-            println!("thread {i} queued");
-            println!("thread {i} started");
+        // Count from 0 to 1_000_000 using pointer.
+        let f = move || {
+            let counter: *mut i32 = address_of_counter as *mut i32;
             for _ in 0..1_000_000 {
-                let mut c = clone.lock().unwrap();
-                *c = *c + 1;
+                unsafe {
+                    *counter = *counter + 1;
+                }
             }
-            println!("thread {i} finished");
-        });
-        tasks.push(task);
+        };
+        let thread = thread::spawn(f);
+        threads.push(thread);
     }
 
     // Wait for all threads to complete
-    for task in tasks {
-        task.join().unwrap();
+    for thread in threads {
+        thread.join().unwrap();
     }
 
-    let c = counter.lock().unwrap();
-    println!("{}", c);
+    println!("no synchronization: counter now is    {}", counter);
+    println!("no synchronization: counter should be {}", 1_000_000 * 5);
+}
+
+fn with_mutex() {
+    // Shared counter between all threads
+    let counter = Mutex::new(0);
+    let counter = Arc::new(counter);
+
+    // Spawn 5 threads to count
+    let mut threads = Vec::with_capacity(5);
+    for i in 0..5 {
+        let counter2 = counter.clone();
+        // Count from 0 to 1_000_000 using mutex.
+        let f = move || {
+            for _ in 0..1_000_000 {
+                let mut lock = counter2.lock().unwrap();
+                let counter: &mut i32 = lock.deref_mut();
+                *counter = *counter + 1;
+            }
+        };
+        let thread = thread::spawn(f);
+        threads.push(thread);
+    }
+
+    // Wait for all threads to complete
+    for thread in threads {
+        thread.join().unwrap();
+    }
+
+    println!("with mutex: counter now is    {}", counter.lock().unwrap());
+    println!("with mutex: counter should be {}", 1_000_000 * 5);
+}
+
+fn main() {
+    no_synchronization();
+    with_mutex();
 }

@@ -7,17 +7,17 @@ edition = "2024"
 name = "basic"
 path = "src/basic.rs"
 
+[[bin]]
+name = "passing_data"
+path = "src/passing_data.rs"
 
 [[bin]]
-name = "basic2"
-path = "src/basic2.rs"
-
-[[bin]]
-name = "race"
-path = "src/race.rs"
+name = "passing_data2"
+path = "src/passing_data2.rs"
 
 [[bin]]
 name = "mutex"
 path = "src/mutex.rs"
 
 [dependencies]
+rand = "0.10.1"
